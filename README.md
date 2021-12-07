@@ -34,8 +34,16 @@ Er en graph af følgende struktur (se [src/utils/parseFlow.ts](src/utils/parseFl
 
 Filerne gemmes i `output`-mappen sammen med evt. billeder.
 
-## Brug
-
+## Installation
+NB: Brug git bash, ikke PowerShell
 1. `npm install`
 2. `npm run build`
-3. `npm run convert`
+
+
+## Brug
+Hvis input-filen, input.json, ligger i en undermappe kaldet '/imports'...
+1. `npm run convert .`
+2. Angiv input som imports/input.json
+3. Følg guiden
+4. JSON-filen i output uploades på MedMCQ
+5. De nye filer i 'output/images' uploades på serveren fx via scp eller Filezilla

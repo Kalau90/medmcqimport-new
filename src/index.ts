@@ -26,7 +26,13 @@ const convert = async () => {
   console.log("> " + removeShortFlows ? "ja" : "nej");
   // Print alle flows i filen
   printIndex(inputFile, removeShortFlows);
-  const indices: number[] = askForIndices();
+  let n_questions = 0;
+  if(!inputFile[0].items){
+    console.log("This set includes no questions!")
+  }else{
+    n_questions = inputFile[0].items.length;
+  }
+  const indices: number[] = askForIndices(n_questions);
 
   // Subset flows
   const flows: Flow[] = indices.map(index => inputFile[index]);

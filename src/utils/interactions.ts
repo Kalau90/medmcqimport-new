@@ -27,19 +27,28 @@ export const askForMinQuestionCount = (): boolean => {
   return input === "Y" || input === "";
 };
 
-export const askForIndices = () => {
+export const askForIndices = (n_questions: number) => {
   let indicesStr = readlineSync.question(
     `Hvilke flows skal eksporteres?
 (kommasepareret: 0,1,2, ...)
 > `,
     {
-      limit: /^(([0-9]){1}[, ]*)+$/,
+      limit: /(^(([0-9]){1}[, ]*)+$|^\*$)/,
       limitMessage:
-        "Indtast et eller flere indices adskilt af kommaer (og evt. mellemrum)"
+        "Indtast et eller flere indices adskilt af kommaer (og evt. mellemrum) - eller tast '*' for alle spørgsmål"
     }
   );
-  indicesStr = indicesStr.replace(" ", "");
-  let indices = indicesStr.split(",");
+  let indices = new Array();
+  if(indicesStr=="*"){
+    console.log("Get all questions from 0 to "+n_questions)
+    for(let i = 0; i < n_questions; i++){
+      indices.push(i)
+    }
+  }else{
+    indicesStr = indicesStr.replace(" ", "");
+    indices = indicesStr.split(",");
+  }
+  console.log("Including:",indices)
   return indices.map(i => Number(i));
 };
 

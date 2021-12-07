@@ -12,6 +12,31 @@ interface ExamSetMetadata {
   exam: { year: number; season: "F" | "E" | string };
 }
 
+const baseToFile = (basestr: any, imageName: string): string => {
+  let imgDir = rootPath + "/output/images";
+  if (!fs.existsSync(imgDir)) fs.mkdirSync(imgDir, { recursive: true });
+
+  // Grab the extension to resolve any image error
+  // ugly possible null fix
+  var ext = (basestr.split(";")[0].match(/jpeg|png|gif/) || [
+    null,
+  ])[0];
+
+  // strip off the data: url prefix to get just the base64-encoded bytes
+  var data = basestr.replace(/^data:image\/\w+;base64,/, "");
+  var buf = Buffer.from(data, "base64");
+  try{
+    fs.writeFileSync(
+      `${imgDir}/${imageName}.${ext}`,
+      buf,
+      "base64");
+    return imageName+"."+ext;
+  } catch(err){
+    console.log(err);
+    return "";
+  }
+}
+
 class ExamSet {
   activityId: number | undefined;
   semesterId: 1 | 2 | 3 | 4 | undefined;
@@ -57,35 +82,31 @@ class ExamSet {
       console.log(colors.yellow("Fjerner billeder, da det er 11. semester"));
       this.questions = this.questions.map((question) => {
         question.images = [];
+        const matches = question.text.match(/(data:image)/g);
+        if(matches){
+          const img_count = matches.length;
+          console.log("Removing "+img_count+" images from text in question no "+question.examSetQno)
+          for(let i = 0; i < img_count; i++){
+            let basestr0 = question.text.split("(data:image/")[1]
+            let basestr = "data:image/"+basestr0.split(")")[0];
+            question.text = question.text.replace("("+basestr+")", "");
+          }
+        }
         return question;
       });
     } else {
       this.questions = await Promise.all(
         this.questions.map(async (question) => {
           if (question.images.length > 0) {
-            let imgDir = rootPath + "/output/images";
-            if (!fs.existsSync(imgDir)) fs.mkdirSync(imgDir, { recursive: true });
             const imageName = `${this.stringifySetInfo()}-${question.examSetQno}`;
 
             // image is blob
             if (question.images[0].link.includes("data:image")) {
-              // Grab the extension to resolve any image error
-              // ugly possible null fix
-              var ext = (question.images[0].link.split(";")[0].match(/jpeg|png|gif/) || [
-                null,
-              ])[0];
-              // strip off the data: url prefix to get just the base64-encoded bytes
-              var data = question.images[0].link.replace(/^data:image\/\w+;base64,/, "");
-              var buf = Buffer.from(data, "base64");
-              fs.writeFile(
-                `${imgDir}/${imageName}.${ext}`,
-                buf,
-                "base64",
-                function (err) {
-                  console.log(err);
-                }
-              );
+              let basestr = question.images[0].link;
+              question.images[0].link = baseToFile(basestr, imageName);
             } else {
+              let imgDir = rootPath + "/output/images";
+              if (!fs.existsSync(imgDir)) fs.mkdirSync(imgDir, { recursive: true });
               await request({ uri: question.images[0].link, encoding: "binary" })
                 .then((body) => {
                   const imageFile = fs.createWriteStream(`${imgDir}/${imageName}.jpg`);
@@ -101,6 +122,25 @@ class ExamSet {
                   );
                 });
             }
+          }else if(question.text.includes("data:image")){
+            // THIS SHOULD LOOP FOR SEVERAL IMAGES
+            let imgDir = rootPath + "/output/images";
+            if (!fs.existsSync(imgDir)) fs.mkdirSync(imgDir, { recursive: true });
+            const matches = question.text.match(/(data:image)/g);
+            if(matches){
+              const img_count = matches.length;
+              console.log("Text for "+question.examSetQno+" includes "+img_count+" images")
+              for(let i = 0; i < img_count; i++){
+                const imageName = `${this.stringifySetInfo()}-${question.examSetQno}_${i}`;
+                let basestr0 = question.text.split("(data:image/")[1]
+                let basestr = "data:image/"+basestr0.split(")")[0];
+                //let reg = new RegExp("("+basestr+")", "g");
+                question.text = question.text.replace("("+basestr+")", "");
+                question.images.push({ link: baseToFile(basestr, imageName)});
+              }
+            }
+            
+            
           }
           return question;
         })
