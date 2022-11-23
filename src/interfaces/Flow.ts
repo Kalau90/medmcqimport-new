@@ -1,4 +1,5 @@
 import { Item, itemsDecoder } from "./Item";
+import { Data, dataDecoder } from "./Data"
 import {
   Decoder,
   object,
@@ -12,29 +13,17 @@ import {
 } from "@mojotech/json-type-validation";
 
 export interface Flow {
-  activityId: number;
-  reference: number;
+  activityId: number | undefined;
   title: string;
   description: string;
   tags: string[] | null | undefined;
-  type: number;
-  items: Item[];
-  createdAt: number;
-  minScore: number | null | undefined;
-  maxScore: number | null | undefined;
-  assignments: string[];
+  data: Data;
 }
 
 export const flowDecoder: Decoder<Flow> = object({
-  activityId: number(),
-  reference: number(),
+  activityId: optional(number()),
   title: string(),
   description: string(),
   tags: optional(oneOf(array(string()), constant(null))),
-  type: number(),
-  items: itemsDecoder,
-  createdAt: number(),
-  minScore: optional(oneOf(number(), constant(null))),
-  maxScore: optional(oneOf(number(), constant(null))),
-  assignments: array(string())
+  data: dataDecoder
 });

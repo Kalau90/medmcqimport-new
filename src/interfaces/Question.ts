@@ -20,13 +20,7 @@ export interface Question {
       scoring_type: "exactMatch";
       valid_response: { score: 1; value: string | string[] };
     };
-    score: 1;
-    minScore: 0 | null | undefined;
   };
-  itemId: number;
-  maxScore: 1;
-  minScore: 0 | null | undefined;
-  id: number;
 }
 
 export const questionsDecoder: Decoder<Question[]> = array(
@@ -50,13 +44,7 @@ export const questionsDecoder: Decoder<Question[]> = array(
           score: constant(1),
           value: union(array(string()), string())
         })
-      }),
-      score: constant(1),
-      minScore: optional(oneOf(constant(0), constant(null)))
-    }),
-    itemId: number(),
-    maxScore: constant(1),
-    minScore: optional(oneOf(constant(0), constant(null))),
-    id: number()
+      })
+    })
   })
 );

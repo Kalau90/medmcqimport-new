@@ -1,6 +1,8 @@
 # MedMCQ import
 
-Dette er en samling scripts, der konverterer et WiseFlow-eksport til en struktur, medMCQ kan håndtere.
+Dette er en samling scripts, der konverterer et WiseFlow-eksport til en struktur, AU MCQ kan håndtere.
+
+Derefter kan disse JSON-filer (fra ouput-mappen) uploades til AU MCQ.
 
 ## Input
 
@@ -41,6 +43,8 @@ NB: Brug git bash, ikke PowerShell
 
 
 ## Brug
+***Anvend git bash!!***
+
 Hvis input-filen, input.json, ligger i en undermappe kaldet '/imports'...
 1. `npm run convert .`
 2. Angiv input som imports/input.json

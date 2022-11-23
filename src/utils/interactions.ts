@@ -8,12 +8,14 @@ export const askForFileAndReadIt = (): Flow[] => {
     limitMessage: "Det var ikke en gyldig .JSON-fil. Prøv igen, tak!"
   });
 
-  return JSON.parse(
+  let raw = JSON.parse(
     fs
       .readFileSync(path)
       .toString()
       .trim()
   );
+  console.log(raw.data[0])
+  return raw.data;
 };
 
 export const askForMinQuestionCount = (): boolean => {
@@ -30,7 +32,7 @@ export const askForMinQuestionCount = (): boolean => {
 export const askForIndices = (n_questions: number) => {
   let indicesStr = readlineSync.question(
     `Hvilke flows skal eksporteres?
-(kommasepareret: 0,1,2, ...)
+(kommasepareret: 0,1,2, ... eller "*" for alle)
 > `,
     {
       limit: /(^(([0-9]){1}[, ]*)+$|^\*$)/,

@@ -12,12 +12,14 @@ interface FlowIndex {
 const indexFlows = (flows: Flow[]): FlowIndex[] => {
   let index: FlowIndex[] = [];
   let ids: number[] = [];
+  console.log("1",flows)
   flows.map(flow => {
-    ids.push(flow.activityId);
+    let aid = flow.activityId || 0;
+    ids.push(aid);
     index.push({
       title: flow.title,
       questions: calculateQuestionCount(flow),
-      activityId: flow.activityId
+      activityId: aid
     });
   });
   if (!fs.existsSync(rootPath + "/output")) fs.mkdirSync(rootPath + "/output");

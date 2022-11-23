@@ -27,10 +27,10 @@ const convert = async () => {
   // Print alle flows i filen
   printIndex(inputFile, removeShortFlows);
   let n_questions = 0;
-  if(!inputFile[0].items){
+  if(!inputFile[0].data.items){
     console.log("This set includes no questions!")
   }else{
-    n_questions = inputFile[0].items.length;
+    n_questions = inputFile[0].data.items.length;
   }
   const indices: number[] = askForIndices(n_questions);
 

@@ -98,6 +98,7 @@ class ExamSet {
       this.questions = await Promise.all(
         this.questions.map(async (question) => {
           if (question.images.length > 0) {
+            console.log("Images for "+question.examSetQno+" includes image(s)")
             const imageName = `${this.stringifySetInfo()}-${question.examSetQno}`;
 
             // image is blob
@@ -122,7 +123,8 @@ class ExamSet {
                   );
                 });
             }
-          }else if(question.text.includes("data:image")){
+          }
+          if(question.text.includes("data:image")){
             // THIS SHOULD LOOP FOR SEVERAL IMAGES
             let imgDir = rootPath + "/output/images";
             if (!fs.existsSync(imgDir)) fs.mkdirSync(imgDir, { recursive: true });
@@ -175,13 +177,13 @@ export const parseFlow = (flow: Flow, metadata: ExamSetMetadata): ExamSet => {
   examSet.activityId = flow.activityId;
   examSet.fillMetadata(metadata);
   const questionsRaw: Question[] = [];
-  flow.items.forEach((item) => {
+  flow.data.items.forEach((item) => {
     // enkelte sæt har en "intro-tekst" til hvert spørgsmål i item.features
     // -- dette kræver at der kun er 1 spørsmål til hver item, derfor
     //    nedenstående fix
-    if (item.questions.length === 1 && item.features) {
+    if (item.questions.length === 1) {
       item.questions[0].data.stimulus =
-        item.features + "<p></p>" + item.questions[0].data.stimulus;
+        "<p></p>" + item.questions[0].data.stimulus;
     }
 
     item.questions.forEach((question) => questionsRaw.push(question));
