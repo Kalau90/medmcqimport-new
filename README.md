@@ -50,4 +50,5 @@ Hvis input-filen, input.json, ligger i en undermappe kaldet '/imports'...
 2. Angiv input som imports/input.json
 3. Følg guiden
 4. JSON-filen i output uploades på MedMCQ
-5. De nye filer i 'output/images' uploades på serveren fx via scp eller Filezilla
+5. De nye filer i 'output/images' uploades på serveren: `scp -i ~/.ssh/au/medmcq_key.pem output/images/Inf-2023F-*d au@20.229.74.51:/home/au/apps/static-medmcq/public/images/`
+6. Genstart 'static-medmcq' containeren
